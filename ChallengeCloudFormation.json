@@ -1,0 +1,77 @@
+{
+  "Description": "EC2 Instance Challenges",
+  "Resources": {
+    "SecurityGroupDemoSvrTraffic": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupName": "UbuntuSec",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "For traffic from Internet"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "For traffic from Internet"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "For traffic from Internet"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 1,
+            "ToPort": 500,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "For traffic to Internet"
+          }
+        ],
+        "GroupDescription": "Security Group for Challenges",
+        "VpcId": "vpc-b84312c2"
+      }
+    },
+    "EC2InstanceChallenge": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1c",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "DeleteOnTermination": "true",
+              "VolumeSize": "8",
+              "VolumeType": "gp2"
+            }
+          }
+        ],
+        "ImageId": "ami-0e472ba40eb589f49",
+        "InstanceType": "t2.micro",
+        "KeyName": "ClavesUbuntu",
+        "NetworkInterfaces": [
+          {
+            "Description": "Primary Network Interface",
+            "DeviceIndex": "0",
+            "SubnetId": "subnet-d47774fa",
+            "PrivateIpAddress": "172.31.91.31",
+            "GroupSet": [
+              {
+                "Ref": "SecurityGroupDemoSvrTraffic"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

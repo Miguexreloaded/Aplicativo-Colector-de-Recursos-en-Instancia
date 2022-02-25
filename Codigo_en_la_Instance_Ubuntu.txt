@@ -1,0 +1,124 @@
+import subprocess
+import time
+import os
+import json
+import socket
+
+from flask import Flask, jsonify, request
+
+#////////////////////////////////////////////// Bloque de codigo para tomar la direccion IP de la instancia
+app = Flask(__name__)
+
+
+hostname = socket.gethostname()
+local_ip = socket.gethostbyname(hostname)
+
+outputiphost = local_ip
+#outputiphost = outputiphost.split("\n")
+#outputiphost = outputiphost [0].split('\\')
+
+
+#print(outputiphost) 
+
+
+#////////////////////////////////////////////// CODIGO QUE LEE VALOR DE VERSION EQUIPO
+
+# se lee el resultado del comando lsb_release para ver la version del equipo
+version=subprocess.Popen(["lsb_release", "-a"], stdout=subprocess.PIPE)
+
+# se analiza y ordena el resultado
+output = str(version.communicate())
+output= output.replace("\n"," ")
+output = output.split("\n")
+output = output [0].split('\\')
+
+
+print(output)
+
+resultado =[]
+for line in output:
+        resultado.append(line)
+
+for i in range(1, len(resultado) - 1):
+        print(resultado[i])
+
+#//////////////////////////////////////// codigo para tomar el valor de CPU de la instancia
+
+#/ se lee el resultado del comando mpstart para ver performance de los procesadores
+cpu=subprocess.Popen(["mpstat", "-P", "ALL"], stdout=subprocess.PIPE)
+outputcpu = str(cpu.communicate())
+outputcpu = outputcpu.split("\n")
+outputcpu = outputcpu [0].split('\\')
+
+
+resultadocpu =[]
+for line in outputcpu:
+        resultadocpu.append(line)
+
+for i in range(1, len(resultadocpu) - 1):
+        print(resultadocpu[i])
+
+
+#/////////////////////////////////////////////////////Codigo para tomar resultado de los Procesos.
+
+proceso=subprocess.Popen(["ps", "-aux"], stdout=subprocess.PIPE)
+outputproc = str(proceso.communicate())
+outputproc = outputproc.split("\n")
+outputproc = outputproc [0].split('\\')
+
+resultadoproc =[]
+for line in outputproc:
+        resultadoproc.append(line)
+
+for i in range(1, len(resultadoproc) - 1):
+        print(resultadoproc[i])
+
+
+#//////////////////////////////////////////////////////////////////////// CODIGO FLASK
+
+@app.route('/performance', methods=['GET'])
+def get_performance():
+ return (resultadocpu)
+ 
+@app.route('/version', methods=['GET'])
+def get_version():
+ return (resultado)
+
+@app.route('/user', methods=['GET'])
+def get_user():
+ return (outputuser)
+
+@app.route('/procesos', methods=['GET'])
+def get_proceso():
+ return (resultadoproc)
+
+@app.route('/iphost', methods=['GET'])
+def get_iphost():
+ return (outputiphost)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
